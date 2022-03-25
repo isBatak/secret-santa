@@ -1,7 +1,8 @@
 import { ChakraProvider, extendTheme, theme } from "@chakra-ui/react";
+import { UserProvider } from '@supabase/supabase-auth-helpers/react';
+import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs';
 import { SWRConfig } from "swr";
 import { SwrSupabaseContext } from "supabase-swr";
-import { supabase } from "../utils/supabaseClient";
 
 import "animate.css";
 
@@ -21,17 +22,19 @@ const myTheme = extendTheme({
 
 function MyApp({ Component, pageProps }) {
   return (
-    <SwrSupabaseContext.Provider value={supabase}>
-      <ChakraProvider theme={myTheme}>
-        <SWRConfig
-          value={{
-            fetcher,
-          }}
-        >
-          <Component {...pageProps} />
-        </SWRConfig>
-      </ChakraProvider>
-    </SwrSupabaseContext.Provider>
+    <UserProvider supabaseClient={supabaseClient}>
+      <SwrSupabaseContext.Provider value={supabaseClient}>
+        <ChakraProvider theme={myTheme}>
+          <SWRConfig
+            value={{
+              fetcher,
+            }}
+          >
+            <Component {...pageProps} />
+          </SWRConfig>
+        </ChakraProvider>
+      </SwrSupabaseContext.Provider>
+    </UserProvider>
   );
 }
 

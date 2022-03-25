@@ -1,9 +1,6 @@
 import { Grid } from "@chakra-ui/react";
-import { useSession } from "supabase-swr";
-import Auth from "./Auth";
 
 export default function Layout({ children }) {
-  const session = useSession();
 
   return (
     <Grid
@@ -13,9 +10,7 @@ export default function Layout({ children }) {
       bgSize="cover"
       p={5}
     >
-      {!session ? (
-        <Auth />
-      ) : children}
+      {children}
     </Grid>
   );
 }
