@@ -1,12 +1,14 @@
 import { ChakraProvider, extendTheme, theme } from '@chakra-ui/react';
-import { UserProvider } from '@supabase/supabase-auth-helpers/react';
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs';
+import { useRouter } from 'next/router';
 import { SWRConfig } from 'swr';
 import { SwrSupabaseContext } from 'supabase-swr';
+import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { SessionContextProvider } from '@supabase/auth-helpers-react';
 
 import 'animate.css';
 
 import { fetcher } from '../libs/fetcher';
+import { useState } from 'react';
 
 const myTheme = extendTheme({
 	styles: {
@@ -30,8 +32,11 @@ const myTheme = extendTheme({
 });
 
 function MyApp({ Component, pageProps }) {
+	const router = useRouter();
+	const [supabaseClient] = useState(() => createBrowserSupabaseClient());
+
 	return (
-		<UserProvider supabaseClient={supabaseClient}>
+		<SessionContextProvider supabaseClient={supabaseClient} initialSession={pageProps.initialSession}>
 			<SwrSupabaseContext.Provider value={supabaseClient}>
 				<ChakraProvider theme={myTheme}>
 					<SWRConfig
@@ -39,11 +44,19 @@ function MyApp({ Component, pageProps }) {
 							fetcher,
 						}}
 					>
+						<button
+							onClick={async () => {
+								await supabaseClient.auth.signOut();
+								router.push('/');
+							}}
+						>
+							Logout
+						</button>
 						<Component {...pageProps} />
 					</SWRConfig>
 				</ChakraProvider>
 			</SwrSupabaseContext.Provider>
-		</UserProvider>
+		</SessionContextProvider>
 	);
 }
 

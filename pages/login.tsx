@@ -1,19 +1,26 @@
-import { useUser, Auth } from '@supabase/supabase-auth-helpers/react';
-import { supabaseClient } from '@supabase/supabase-auth-helpers/nextjs';
+import { useUser, useSessionContext } from '@supabase/auth-helpers-react';
+import { Auth, ThemeSupa } from '@supabase/auth-ui-react';
 import Layout from '@/components/Layout';
 import { NextPage } from 'next';
 import { Card } from '@/components/core/Card/Card';
 import { FormControl, FormErrorMessage } from '@chakra-ui/react';
 
 const LoginPage: NextPage = () => {
-	const { error } = useUser();
+	const { isLoading, session, error, supabaseClient } = useSessionContext();
+	const user = useUser();
 
 	return (
 		<Layout>
 			<Card>
 				<FormControl isInvalid={!!error}>
 					<FormErrorMessage>{error?.message}</FormErrorMessage>
-					<Auth supabaseClient={supabaseClient} socialLayout="vertical" socialButtonSize="xlarge" magicLink />
+					<Auth
+						redirectTo="http://localhost:3000/"
+						appearance={{ theme: ThemeSupa }}
+						supabaseClient={supabaseClient}
+						socialLayout="horizontal"
+						magicLink
+					/>
 				</FormControl>
 			</Card>
 		</Layout>
